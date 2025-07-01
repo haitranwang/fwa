@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spika Academy - Load Sample Data</title>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 2.5em;
+            font-weight: 300;
+        }
+        .header p {
+            margin: 10px 0 0 0;
+            opacity: 0.9;
+            font-size: 1.1em;
+        }
+        .content {
+            padding: 30px;
+        }
+        .btn {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin: 10px 5px;
+            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
+        }
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        .btn-danger {
+            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+            box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
+        }
+        .logs {
+            background: #1e1e1e;
+            color: #00ff00;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            max-height: 400px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            margin: 20px 0;
+            border: 2px solid #333;
+        }
+        .info-box {
+            background: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        .success-box {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        .warning-box {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        .data-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .data-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            border-top: 4px solid #28a745;
+        }
+        .data-number {
+            font-size: 2em;
+            font-weight: bold;
+            color: #28a745;
+            margin: 10px 0;
+        }
+        .data-label {
+            color: #666;
+            font-size: 0.9em;
+        }
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: #e9ecef;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 15px 0;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #28a745, #20c997);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📊 Spika Academy</h1>
+            <p>Sample Data Loader</p>
+        </div>
+
+        <div class="content">
+            <div class="info-box">
+                <h3>📋 Thông tin Sample Data</h3>
+                <p>Tool này sẽ thêm dữ liệu mẫu vào database bao gồm:</p>
+                <ul>
+                    <li><strong>1 Admin:</strong> admin@spika.edu.vn (admin/123456)</li>
+                    <li><strong>3 Teachers:</strong> Nguyễn Văn A, Trần Thị B, Lê Quang C</li>
+                    <li><strong>5 Students:</strong> Phạm Văn D, Hoàng Thị E, Vũ Minh F, Đặng Thị G, Bùi Văn H</li>
+                    <li><strong>4 Courses:</strong> React Web, React Native, Data Science, DevOps</li>
+                    <li><strong>4 Classes:</strong> Các lớp học đang hoạt động</li>
+                    <li><strong>6 Enrollments:</strong> Đăng ký học của students</li>
+                    <li><strong>5 Lessons:</strong> Các buổi học mẫu</li>
+                    <li><strong>2 Assignments:</strong> Bài tập mẫu</li>
+                    <li><strong>2 Submissions:</strong> Bài nộp mẫu</li>
+                </ul>
+            </div>
+
+            <div class="warning-box">
+                <h3>⚠️ Lưu ý</h3>
+                <p>Đảm bảo bạn đã chạy migration chính trước khi load sample data!</p>
+                <p>Tất cả mật khẩu mẫu đều là: <strong>123456</strong></p>
+            </div>
+
+            <div class="data-summary" id="dataSummary" style="display: none;">
+                <div class="data-card">
+                    <div class="data-number" id="usersLoaded">0</div>
+                    <div class="data-label">Users</div>
+                </div>
+                <div class="data-card">
+                    <div class="data-number" id="coursesLoaded">0</div>
+                    <div class="data-label">Courses</div>
+                </div>
+                <div class="data-card">
+                    <div class="data-number" id="classesLoaded">0</div>
+                    <div class="data-label">Classes</div>
+                </div>
+                <div class="data-card">
+                    <div class="data-number" id="enrollmentsLoaded">0</div>
+                    <div class="data-label">Enrollments</div>
+                </div>
+            </div>
+
+            <div style="text-align: center; margin: 30px 0;">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressBar"></div>
+                </div>
+                <p id="statusText">Sẵn sàng load sample data</p>
+
+                <button class="btn" onclick="loadSampleData()" id="loadBtn">
+                    📊 Load Sample Data
+                </button>
+                <button class="btn btn-danger" onclick="clearLogs()" id="clearBtn">
+                    🗑️ Clear Logs
+                </button>
+            </div>
+
+            <div class="logs" id="logs">Chờ bắt đầu load sample data...</div>
+        </div>
+    </div>
+
+    <script>
+        // Khởi tạo Supabase client
+        const SUPABASE_URL = "https://ltytzzennnlgbwkkhwnv.supabase.co";
+        const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx0eXR6emVubm5sZ2J3a2tod252Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1MTM5MDI0NiwiZXhwIjoyMDY2OTY2MjQ2fQ.xMHgQGgUjJvLTRGj77goqeGGDsXDqo-_GdlSg2vnqss";
+
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        let loadStats = {
+            usersLoaded: 0,
+            coursesLoaded: 0,
+            classesLoaded: 0,
+            enrollmentsLoaded: 0
+        };
+
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const logElement = document.getElementById('logs');
+            const prefix = type === 'error' ? '❌' : type === 'success' ? '✅' : type === 'warning' ? '⚠️' : 'ℹ️';
+            logElement.textContent += `[${timestamp}] ${prefix} ${message}\n`;
+            logElement.scrollTop = logElement.scrollHeight;
+        }
+
+        function updateProgress(percentage) {
+            document.getElementById('progressBar').style.width = percentage + '%';
+        }
+
+        function updateStatus(status) {
+            document.getElementById('statusText').textContent = status;
+        }
+
+        function updateStats() {
+            document.getElementById('usersLoaded').textContent = loadStats.usersLoaded;
+            document.getElementById('coursesLoaded').textContent = loadStats.coursesLoaded;
+            document.getElementById('classesLoaded').textContent = loadStats.classesLoaded;
+            document.getElementById('enrollmentsLoaded').textContent = loadStats.enrollmentsLoaded;
+            document.getElementById('dataSummary').style.display = 'grid';
+        }
+
+        function clearLogs() {
+            document.getElementById('logs').textContent = 'Logs đã được xóa...\n';
+        }
+
+        async function loadSampleData() {
+            const loadBtn = document.getElementById('loadBtn');
+            loadBtn.disabled = true;
+            loadBtn.textContent = '⏳ Đang load sample data...';
+
+            log('📊 Bắt đầu load sample data', 'info');
+            updateStatus('Đang đọc file sample data...');
+            updateProgress(0);
+
+            try {
+                // Fetch sample data SQL
+                const response = await fetch('./supabase/migrations/20241201000001_sample_data.sql');
+                if (!response.ok) {
+                    throw new Error('Không thể đọc file sample data');
+                }
+
+                const sampleDataSQL = await response.text();
+                log('📖 Đã đọc file sample data thành công', 'success');
+
+                // Split SQL into statements
+                const statements = sampleDataSQL
+                    .split(';')
+                    .map(stmt => stmt.trim())
+                    .filter(stmt => stmt.length > 0 && !stmt.startsWith('--'));
+
+                log(`📝 Tìm thấy ${statements.length} câu lệnh SQL`, 'info');
+                updateStatus(`Đang thực thi ${statements.length} câu lệnh...`);
+
+                let successCount = 0;
+                let errorCount = 0;
+
+                for (let i = 0; i < statements.length; i++) {
+                    const statement = statements[i];
+                    const progress = ((i + 1) / statements.length) * 100;
+
+                    updateProgress(progress);
+                    updateStatus(`Đang thực thi câu lệnh ${i + 1}/${statements.length}...`);
+
+                    try {
+                        // Execute SQL statement
+                        const { error } = await supabase.rpc('exec_sql', {
+                            sql: statement + ';'
+                        });
+
+                        if (error) {
+                            log(`⚠️ Lỗi câu lệnh ${i + 1}: ${error.message}`, 'warning');
+                            errorCount++;
+                        } else {
+                            successCount++;
+
+                            // Update stats based on statement type
+                            const upperStatement = statement.toUpperCase();
+                            if (upperStatement.includes('INSERT INTO PUBLIC.PROFILES')) {
+                                loadStats.usersLoaded++;
+                            } else if (upperStatement.includes('INSERT INTO PUBLIC.COURSES')) {
+                                loadStats.coursesLoaded++;
+                            } else if (upperStatement.includes('INSERT INTO PUBLIC.CLASSES')) {
+                                loadStats.classesLoaded++;
+                            } else if (upperStatement.includes('INSERT INTO PUBLIC.ENROLLMENTS')) {
+                                loadStats.enrollmentsLoaded++;
+                            }
+                        }
+
+                        updateStats();
+
+                        // Small delay to avoid rate limiting
+                        await new Promise(resolve => setTimeout(resolve, 100));
+
+                    } catch (err) {
+                        log(`❌ Lỗi không mong đợi câu lệnh ${i + 1}: ${err.message}`, 'error');
+                        errorCount++;
+                    }
+                }
+
+                updateProgress(100);
+
+                if (errorCount === 0) {
+                    log('🎉 Sample data đã được load thành công!', 'success');
+                    updateStatus('✅ Sample data load hoàn thành!');
+
+                    // Show success summary
+                    log('📊 Tóm tắt dữ liệu đã load:', 'info');
+                    log(`   👥 Users: ${loadStats.usersLoaded}`, 'info');
+                    log(`   📚 Courses: ${loadStats.coursesLoaded}`, 'info');
+                    log(`   🏫 Classes: ${loadStats.classesLoaded}`, 'info');
+                    log(`   📝 Enrollments: ${loadStats.enrollmentsLoaded}`, 'info');
+
+                    log('💡 Bạn có thể đăng nhập với:', 'info');
+                    log('   Admin: admin@spika.edu.vn / 123456', 'info');
+                    log('   Teacher: nguyenvana@spika.edu.vn / 123456', 'info');
+                    log('   Student: student1@gmail.com / 123456', 'info');
+
+                } else {
+                    log(`⚠️ Sample data load hoàn thành với ${errorCount} lỗi`, 'warning');
+                    updateStatus(`⚠️ Load hoàn thành với ${errorCount} lỗi`);
+                }
+
+                log(`📊 Kết quả: ${successCount} thành công, ${errorCount} lỗi`, 'info');
+
+            } catch (error) {
+                log(`❌ Lỗi khi load sample data: ${error.message}`, 'error');
+                updateStatus('❌ Load sample data thất bại');
+            } finally {
+                loadBtn.disabled = false;
+                loadBtn.textContent = '📊 Load Sample Data';
+            }
+        }
+
+        // Initialize
+        log('📊 Sample Data Loader đã sẵn sàng', 'info');
+        log('💡 Nhấn "Load Sample Data" để bắt đầu', 'info');
+    </script>
+</body>
+</html>

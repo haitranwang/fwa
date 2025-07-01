@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spika Academy - Complete Database Migration</title>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #02458b 0%, #0066cc 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 2.5em;
+            font-weight: 300;
+        }
+        .header p {
+            margin: 10px 0 0 0;
+            opacity: 0.9;
+            font-size: 1.1em;
+        }
+        .content {
+            padding: 30px;
+        }
+        .status-section {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .btn {
+            background: linear-gradient(135deg, #02458b 0%, #0066cc 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin: 10px 5px;
+            box-shadow: 0 4px 15px rgba(2, 69, 139, 0.3);
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(2, 69, 139, 0.4);
+        }
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        .btn-danger {
+            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+            box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
+        }
+        .btn-success {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+        }
+        .logs {
+            background: #1e1e1e;
+            color: #00ff00;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            max-height: 400px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            margin: 20px 0;
+            border: 2px solid #333;
+        }
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: #e9ecef;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 15px 0;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #02458b, #0066cc);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        .info-box {
+            background: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        .warning-box {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        .success-box {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        .error-box {
+            background: #f8d7da;
+            border-left: 4px solid #dc3545;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-top: 4px solid #02458b;
+        }
+        .stat-number {
+            font-size: 2em;
+            font-weight: bold;
+            color: #02458b;
+            margin: 10px 0;
+        }
+        .stat-label {
+            color: #666;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏗️ Spika Academy</h1>
+            <p>Complete Database Migration Tool</p>
+        </div>
+
+        <div class="content">
+            <div class="info-box">
+                <h3>📋 Thông tin Migration</h3>
+                <p>Tool này sẽ tạo toàn bộ schema database cho hệ thống Spika Academy bao gồm:</p>
+                <ul>
+                    <li>8 bảng chính: profiles, courses, classes, enrollments, lessons, assignments, assignment_submissions, website_analytics</li>
+                    <li>Tất cả indexes để tối ưu hóa performance</li>
+                    <li>Triggers tự động cập nhật timestamps</li>
+                    <li>Row Level Security (RLS) policies</li>
+                    <li>Comments mô tả chi tiết</li>
+                    <li>Dữ liệu mẫu cho testing</li>
+                </ul>
+            </div>
+
+            <div class="warning-box">
+                <h3>⚠️ Lưu ý quan trọng</h3>
+                <p>Migration này sẽ tạo mới toàn bộ schema. Nếu database đã có dữ liệu, hãy backup trước khi chạy!</p>
+            </div>
+
+            <div class="status-section">
+                <h3>🎯 Trạng thái Migration</h3>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressBar"></div>
+                </div>
+                <p id="statusText">Sẵn sàng để bắt đầu migration</p>
+
+                <div class="stats" id="statsContainer" style="display: none;">
+                    <div class="stat-card">
+                        <div class="stat-number" id="tablesCreated">0</div>
+                        <div class="stat-label">Bảng đã tạo</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="indexesCreated">0</div>
+                        <div class="stat-label">Indexes đã tạo</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="policiesCreated">0</div>
+                        <div class="stat-label">Policies đã tạo</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="errorsCount">0</div>
+                        <div class="stat-label">Lỗi</div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="text-align: center; margin: 30px 0;">
+                <button class="btn" onclick="runCompleteMigration()" id="migrationBtn">
+                    🚀 Chạy Complete Migration
+                </button>
+                <button class="btn btn-success" onclick="verifyDatabase()" id="verifyBtn" disabled>
+                    ✅ Kiểm tra Database
+                </button>
+                <button class="btn btn-danger" onclick="clearLogs()" id="clearBtn">
+                    🗑️ Xóa Logs
+                </button>
+            </div>
+
+            <div class="logs" id="logs">Chờ bắt đầu migration...</div>
+        </div>
+    </div>
+
+    <script>
+        // Khởi tạo Supabase client
+        const SUPABASE_URL = "https://ltytzzennnlgbwkkhwnv.supabase.co";
+        const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx0eXR6emVubm5sZ2J3a2tod252Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1MTM5MDI0NiwiZXhwIjoyMDY2OTY2MjQ2fQ.xMHgQGgUjJvLTRGj77goqeGGDsXDqo-_GdlSg2vnqss";
+
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        let migrationStats = {
+            tablesCreated: 0,
+            indexesCreated: 0,
+            policiesCreated: 0,
+            errorsCount: 0
+        };
+
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const logElement = document.getElementById('logs');
+            const prefix = type === 'error' ? '❌' : type === 'success' ? '✅' : type === 'warning' ? '⚠️' : 'ℹ️';
+            logElement.textContent += `[${timestamp}] ${prefix} ${message}\n`;
+            logElement.scrollTop = logElement.scrollHeight;
+        }
+
+        function updateProgress(percentage) {
+            document.getElementById('progressBar').style.width = percentage + '%';
+        }
+
+        function updateStatus(status) {
+            document.getElementById('statusText').textContent = status;
+        }
+
+        function updateStats() {
+            document.getElementById('tablesCreated').textContent = migrationStats.tablesCreated;
+            document.getElementById('indexesCreated').textContent = migrationStats.indexesCreated;
+            document.getElementById('policiesCreated').textContent = migrationStats.policiesCreated;
+            document.getElementById('errorsCount').textContent = migrationStats.errorsCount;
+            document.getElementById('statsContainer').style.display = 'grid';
+        }
+
+        function clearLogs() {
+            document.getElementById('logs').textContent = 'Logs đã được xóa...\n';
+        }
+
+        // Migration SQL - Chia thành các phần nhỏ
+        const migrationParts = [
+            // Part 1: Create ENUM types
+            `
+            CREATE TYPE user_role AS ENUM ('student', 'teacher', 'admin');
+            CREATE TYPE course_status AS ENUM ('Đang mở', 'Đang bắt đầu', 'Kết thúc');
+            CREATE TYPE course_level AS ENUM ('basic', 'intermediate', 'advance');
+            CREATE TYPE class_status AS ENUM ('Đang hoạt động', 'Đã kết thúc');
+            CREATE TYPE trang_thai_bai_nop AS ENUM ('Chưa làm', 'Đang chờ chấm', 'Đã hoàn thành');
+            `,
+
+            // Part 2: Create profiles table
+            `
+            CREATE TABLE IF NOT EXISTS public.profiles (
+                id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+                username VARCHAR(50) UNIQUE NOT NULL,
+                email VARCHAR(255) UNIQUE NOT NULL,
+                password VARCHAR(255) NOT NULL,
+                fullname VARCHAR(255) NOT NULL,
+                role user_role DEFAULT 'student',
+                age INTEGER,
+                phone_number VARCHAR(20),
+                avatar_url TEXT,
+                info TEXT,
+                created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()),
+                updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now())
+            );
+            `,
+
+            // Part 3: Create courses table
+            `
+            CREATE TABLE IF NOT EXISTS public.courses (
+                id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+                name VARCHAR(255) NOT NULL,
+                description TEXT,
+                detail_lessons TEXT,
+                duration INTEGER NOT NULL,
+                price DECIMAL(10,2),
+                image_url TEXT,
+                status course_status DEFAULT 'Đang mở',
+                created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()),
+                updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now())
+            );
+            `
+        ];
+
+        async function runCompleteMigration() {
+            const migrationBtn = document.getElementById('migrationBtn');
+            const verifyBtn = document.getElementById('verifyBtn');
+
+            migrationBtn.disabled = true;
+            migrationBtn.textContent = '⏳ Đang chạy migration...';
+
+            log('🚀 Bắt đầu Complete Database Migration', 'info');
+            log('⚠️ Lưu ý: Tool này không thể chạy migration trực tiếp do hạn chế của Supabase', 'warning');
+            log('💡 Vui lòng sử dụng Supabase Dashboard để chạy migration', 'info');
+            updateStatus('Đang chuẩn bị hướng dẫn migration...');
+            updateProgress(0);
+
+            try {
+                // Fetch complete migration SQL from file
+                const response = await fetch('./supabase/migrations/20241201000000_create_complete_schema.sql');
+                if (!response.ok) {
+                    throw new Error('Không thể đọc file migration');
+                }
+
+                const migrationSQL = await response.text();
+                log('📖 Đã đọc file migration thành công', 'success');
+                updateProgress(25);
+
+                // Show instructions instead of trying to execute
+                log('📋 HƯỚNG DẪN MIGRATION:', 'info');
+                log('1. Mở Supabase Dashboard: https://supabase.com/dashboard', 'info');
+                log('2. Chọn project của bạn', 'info');
+                log('3. Vào SQL Editor (sidebar)', 'info');
+                log('4. Copy toàn bộ nội dung file migration', 'info');
+                log('5. Paste vào SQL Editor và nhấn Run', 'info');
+                updateProgress(50);
+
+                // Count statements for information
+                const statements = migrationSQL
+                    .split(';')
+                    .map(stmt => stmt.trim())
+                    .filter(stmt => stmt.length > 0 && !stmt.startsWith('--'));
+
+                log(`📝 File migration chứa ${statements.length} câu lệnh SQL`, 'info');
+                updateProgress(75);
+
+                // Count different types
+                let tableCount = 0;
+                let indexCount = 0;
+                let policyCount = 0;
+
+                statements.forEach(stmt => {
+                    const upperStmt = stmt.toUpperCase();
+                    if (upperStmt.includes('CREATE TABLE')) tableCount++;
+                    else if (upperStmt.includes('CREATE INDEX')) indexCount++;
+                    else if (upperStmt.includes('CREATE POLICY')) policyCount++;
+                });
+
+                migrationStats.tablesCreated = tableCount;
+                migrationStats.indexesCreated = indexCount;
+                migrationStats.policiesCreated = policyCount;
+                updateStats();
+
+                log(`📊 Sẽ tạo: ${tableCount} bảng, ${indexCount} indexes, ${policyCount} policies`, 'info');
+                updateProgress(100);
+
+                log('🎯 Để chạy migration:', 'success');
+                log('   - Mở file: supabase/migrations/20241201000000_create_complete_schema.sql', 'success');
+                log('   - Copy toàn bộ nội dung', 'success');
+                log('   - Paste vào Supabase SQL Editor', 'success');
+                log('   - Nhấn Run để thực thi', 'success');
+
+                updateStatus('✅ Hướng dẫn migration đã sẵn sàng!');
+                verifyBtn.disabled = false;
+
+            } catch (error) {
+                log(`❌ Lỗi khi đọc file migration: ${error.message}`, 'error');
+                updateStatus('❌ Không thể đọc file migration');
+                migrationStats.errorsCount++;
+                updateStats();
+            } finally {
+                migrationBtn.disabled = false;
+                migrationBtn.textContent = '📋 Xem hướng dẫn Migration';
+            }
+        }
+
+        async function verifyDatabase() {
+            log('🔍 Bắt đầu kiểm tra database...', 'info');
+
+            const tables = [
+                'profiles', 'courses', 'classes', 'enrollments',
+                'lessons', 'assignments', 'assignment_submissions', 'website_analytics'
+            ];
+
+            let allTablesOk = true;
+
+            for (const table of tables) {
+                try {
+                    const { data, error, count } = await supabase
+                        .from(table)
+                        .select('*', { count: 'exact', head: true });
+
+                    if (error) {
+                        log(`❌ Bảng ${table}: ${error.message}`, 'error');
+                        allTablesOk = false;
+                    } else {
+                        log(`✅ Bảng ${table}: OK (${count || 0} records)`, 'success');
+                    }
+                } catch (err) {
+                    log(`❌ Bảng ${table}: ${err.message}`, 'error');
+                    allTablesOk = false;
+                }
+            }
+
+            if (allTablesOk) {
+                log('🎯 Tất cả bảng đều hoạt động bình thường!', 'success');
+            } else {
+                log('⚠️ Một số bảng có vấn đề, vui lòng kiểm tra lại', 'warning');
+            }
+        }
+
+        // Initialize
+        log('🏗️ Spika Academy Database Migration Tool đã sẵn sàng', 'info');
+        log('💡 Nhấn "Chạy Complete Migration" để bắt đầu', 'info');
+    </script>
+</body>
+</html>

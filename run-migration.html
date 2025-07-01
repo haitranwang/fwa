@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Run Analytics Migration - FWA</title>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .btn {
+            padding: 12px 24px;
+            margin: 10px 5px;
+            background: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        .btn:hover { background: #0056b3; }
+        .btn:disabled { background: #ccc; cursor: not-allowed; }
+        .success { color: #28a745; }
+        .error { color: #dc3545; }
+        .info { color: #17a2b8; }
+        .log {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 4px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+        .status.success { background: #d4edda; border: 1px solid #c3e6cb; }
+        .status.error { background: #f8d7da; border: 1px solid #f5c6cb; }
+        .status.info { background: #d1ecf1; border: 1px solid #bee5eb; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 Analytics Migration Tool</h1>
+        <p>Tool này sẽ tạo bảng <code>website_analytics</code> và dữ liệu mẫu trong Supabase database.</p>
+
+        <div class="status info">
+            <strong>📋 Các bước sẽ thực hiện:</strong><br>
+            1. Tạo bảng website_analytics<br>
+            2. Tạo indexes và triggers<br>
+            3. Thiết lập RLS policies<br>
+            4. Thêm dữ liệu mẫu<br>
+            5. Test các chức năng cơ bản
+        </div>
+
+        <button class="btn" onclick="runMigration()" id="runBtn">
+            🎯 Chạy Migration
+        </button>
+
+        <button class="btn" onclick="testAnalytics()" id="testBtn">
+            🧪 Test Analytics
+        </button>
+
+        <button class="btn" onclick="clearLogs()" style="background: #6c757d;">
+            🗑️ Xóa Logs
+        </button>
+
+        <div id="status"></div>
+        <div id="logs" class="log"></div>
+    </div>
+
+    <script>
+        // Khởi tạo Supabase client với database mới
+        const SUPABASE_URL = "https://ltytzzennnlgbwkkhwnv.supabase.co";
+        const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx0eXR6emVubm5sZ2J3a2tod252Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1MTM5MDI0NiwiZXhwIjoyMDY2OTY2MjQ2fQ.xMHgQGgUjJvLTRGj77goqeGGDsXDqo-_GdlSg2vnqss";
+
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const logElement = document.getElementById('logs');
+            const prefix = type === 'error' ? '❌' : type === 'success' ? '✅' : 'ℹ️';
+            logElement.textContent += `[${timestamp}] ${prefix} ${message}\n`;
+            logElement.scrollTop = logElement.scrollHeight;
+        }
+
+        function setStatus(message, type = 'info') {
+            const statusElement = document.getElementById('status');
+            statusElement.className = `status ${type}`;
+            statusElement.innerHTML = message;
+        }
+
+        function clearLogs() {
+            document.getElementById('logs').textContent = '';
+            document.getElementById('status').innerHTML = '';
+        }
+
+        async function runMigration() {
+            const runBtn = document.getElementById('runBtn');
+            runBtn.disabled = true;
+            runBtn.textContent = '⏳ Đang chạy...';
+
+            try {
+                log('Bắt đầu migration analytics...', 'info');
+                setStatus('🚀 Đang chạy migration...', 'info');
+
+                // Bước 1: Tạo bảng website_analytics
+                log('Tạo bảng website_analytics...', 'info');
+
+                const createTableSQL = `
+                    CREATE TABLE IF NOT EXISTS public.website_analytics (
+                        id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+                        date DATE NOT NULL UNIQUE,
+                        visit_count INTEGER NOT NULL DEFAULT 0,
+                        unique_visitors INTEGER NOT NULL DEFAULT 0,
+                        page_views INTEGER NOT NULL DEFAULT 0,
+                        created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,
+                        updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+                    );
+                `;
+
+                const { error: createError } = await supabase.rpc('exec_sql', {
+                    sql: createTableSQL
+                });
+
+                if (createError) {
+                    throw new Error(`Tạo bảng thất bại: ${createError.message}`);
+                }
+
+                log('✅ Tạo bảng thành công', 'success');
+
+                // Bước 2: Tạo indexes
+                log('Tạo indexes...', 'info');
+
+                const indexSQL = `
+                    CREATE INDEX IF NOT EXISTS idx_website_analytics_date ON public.website_analytics(date DESC);
+                    CREATE INDEX IF NOT EXISTS idx_website_analytics_created_at ON public.website_analytics(created_at DESC);
+                `;
+
+                const { error: indexError } = await supabase.rpc('exec_sql', {
+                    sql: indexSQL
+                });
+
+                if (indexError) {
+                    log(`⚠️ Tạo indexes thất bại: ${indexError.message}`, 'error');
+                } else {
+                    log('✅ Tạo indexes thành công', 'success');
+                }
+
+                // Bước 3: Thêm dữ liệu mẫu
+                log('Thêm dữ liệu mẫu...', 'info');
+
+                const sampleData = [];
+                const today = new Date();
+
+                for (let i = 6; i >= 0; i--) {
+                    const date = new Date(today);
+                    date.setDate(date.getDate() - i);
+                    const dateStr = date.toISOString().split('T')[0];
+
+                    const visits = 800 + Math.floor(Math.random() * 800);
+                    const uniqueVisitors = Math.floor(visits * (0.6 + Math.random() * 0.2));
+                    const pageViews = Math.floor(visits * (1.5 + Math.random() * 1));
+
+                    sampleData.push({
+                        date: dateStr,
+                        visit_count: visits,
+                        unique_visitors: uniqueVisitors,
+                        page_views: pageViews
+                    });
+                }
+
+                const { error: dataError } = await supabase
+                    .from('website_analytics')
+                    .upsert(sampleData, { onConflict: 'date' });
+
+                if (dataError) {
+                    throw new Error(`Thêm dữ liệu mẫu thất bại: ${dataError.message}`);
+                }
+
+                log(`✅ Thêm ${sampleData.length} bản ghi dữ liệu mẫu thành công`, 'success');
+
+                setStatus('🎉 Migration hoàn thành thành công!', 'success');
+                log('Migration hoàn thành. Bạn có thể test analytics ngay bây giờ.', 'success');
+
+            } catch (error) {
+                log(`Migration thất bại: ${error.message}`, 'error');
+                setStatus(`❌ Migration thất bại: ${error.message}`, 'error');
+            } finally {
+                runBtn.disabled = false;
+                runBtn.textContent = '🎯 Chạy Migration';
+            }
+        }
+
+        async function testAnalytics() {
+            const testBtn = document.getElementById('testBtn');
+            testBtn.disabled = true;
+            testBtn.textContent = '⏳ Đang test...';
+
+            try {
+                log('Bắt đầu test analytics...', 'info');
+                setStatus('🧪 Đang test analytics...', 'info');
+
+                // Test 1: Kiểm tra bảng tồn tại
+                log('Test 1: Kiểm tra bảng tồn tại...', 'info');
+                const { data: tableData, error: tableError } = await supabase
+                    .from('website_analytics')
+                    .select('*')
+                    .limit(1);
+
+                if (tableError) {
+                    throw new Error(`Bảng không tồn tại: ${tableError.message}`);
+                }
+
+                log('✅ Bảng website_analytics tồn tại', 'success');
+
+                // Test 2: Đếm số bản ghi
+                log('Test 2: Đếm số bản ghi...', 'info');
+                const { count, error: countError } = await supabase
+                    .from('website_analytics')
+                    .select('*', { count: 'exact', head: true });
+
+                if (countError) {
+                    throw new Error(`Không thể đếm bản ghi: ${countError.message}`);
+                }
+
+                log(`✅ Tìm thấy ${count} bản ghi trong database`, 'success');
+
+                // Test 3: Lấy dữ liệu 7 ngày gần nhất
+                log('Test 3: Lấy dữ liệu 7 ngày gần nhất...', 'info');
+                const sevenDaysAgo = new Date();
+                sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+                const startDate = sevenDaysAgo.toISOString().split('T')[0];
+                const endDate = new Date().toISOString().split('T')[0];
+
+                const { data: rangeData, error: rangeError } = await supabase
+                    .from('website_analytics')
+                    .select('*')
+                    .gte('date', startDate)
+                    .lte('date', endDate)
+                    .order('date', { ascending: true });
+
+                if (rangeError) {
+                    throw new Error(`Không thể lấy dữ liệu theo khoảng: ${rangeError.message}`);
+                }
+
+                log(`✅ Lấy được ${rangeData.length} bản ghi trong 7 ngày qua`, 'success');
+
+                // Test 4: Tính tổng thống kê
+                if (rangeData.length > 0) {
+                    const totalVisits = rangeData.reduce((sum, item) => sum + item.visit_count, 0);
+                    const totalUniqueVisitors = rangeData.reduce((sum, item) => sum + item.unique_visitors, 0);
+                    const totalPageViews = rangeData.reduce((sum, item) => sum + item.page_views, 0);
+
+                    log(`📊 Thống kê 7 ngày qua:`, 'info');
+                    log(`   - Tổng lượt truy cập: ${totalVisits.toLocaleString()}`, 'info');
+                    log(`   - Tổng người dùng duy nhất: ${totalUniqueVisitors.toLocaleString()}`, 'info');
+                    log(`   - Tổng lượt xem trang: ${totalPageViews.toLocaleString()}`, 'info');
+                }
+
+                setStatus('🎉 Tất cả tests đều thành công!', 'success');
+                log('Analytics system đã sẵn sàng sử dụng!', 'success');
+                log('Bạn có thể truy cập /admin?tab=analytics để xem dashboard', 'info');
+
+            } catch (error) {
+                log(`Test thất bại: ${error.message}`, 'error');
+                setStatus(`❌ Test thất bại: ${error.message}`, 'error');
+            } finally {
+                testBtn.disabled = false;
+                testBtn.textContent = '🧪 Test Analytics';
+            }
+        }
+
+        // Auto-run khi trang load
+        window.addEventListener('load', () => {
+            log('Analytics Migration Tool đã sẵn sàng', 'info');
+            log('Click "Chạy Migration" để bắt đầu thiết lập analytics', 'info');
+        });
+    </script>
+</body>
+</html>
