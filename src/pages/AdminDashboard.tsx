@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Users, BookOpen, BarChart3, AlertCircle, Settings } from 'lucide-react';
+import { Users, BookOpen, BarChart3, AlertCircle, Settings, TrendingUp } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useUserRole } from '@/hooks/useUserRole';
 import { useToast } from '@/hooks/use-toast';
@@ -10,6 +10,7 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import UserManagement from '@/components/admin/UserManagement';
 import CourseManagement from '@/components/admin/CourseManagement';
 import ClassManagement from '@/components/admin/ClassManagement';
+import AnalyticsTab from '@/components/admin/AnalyticsTab';
 import AdminOverview from '@/components/admin/AdminOverview';
 import AdminToolbar from '@/components/admin/AdminToolbar';
 
@@ -64,7 +65,7 @@ const AdminDashboard = () => {
     // Kiểm tra query params
     const urlParams = new URLSearchParams(location.search);
     const tab = urlParams.get('tab');
-    
+
     if (tab) {
       setActiveTab(tab);
     } else if (location.state?.activeTab) {
@@ -81,6 +82,12 @@ const AdminDashboard = () => {
       icon: BarChart3,
       label: 'Tổng quan',
       component: AdminOverview
+    },
+    {
+      value: 'analytics',
+      icon: TrendingUp,
+      label: 'Thống kê',
+      component: AnalyticsTab
     },
     {
       value: 'users',
@@ -118,7 +125,7 @@ const AdminDashboard = () => {
             </div>
           </div>
         )}
-        
+
         <div className="min-h-screen bg-gradient-to-br from-red-50 via-orange-50 to-yellow-50 flex items-center justify-center p-4">
           <Card className="w-full max-w-md shadow-xl border-0">
             <CardHeader className="text-center bg-gradient-to-r from-red-500 to-pink-500 text-white rounded-t-lg">
@@ -167,7 +174,7 @@ const AdminDashboard = () => {
             </div>
           </div>
         )}
-        
+
               <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
           <AdminToolbar title="Quản trị" subtitle="Bảng điều khiển hệ thống" />
 
@@ -176,8 +183,8 @@ const AdminDashboard = () => {
             <div className="bg-white rounded-2xl shadow-xl border-0 overflow-hidden">
             <div className="bg-[#02458b] p-4">
                 <div className="flex items-center space-x-3">
-                  {React.createElement(tabItems.find(item => item.value === activeTab)?.icon || BarChart3, { 
-                    className: "h-6 w-6 text-white" 
+                  {React.createElement(tabItems.find(item => item.value === activeTab)?.icon || BarChart3, {
+                    className: "h-6 w-6 text-white"
                   })}
                   <div>
                     <h2 className="text-lg font-semibold text-white">
@@ -189,7 +196,7 @@ const AdminDashboard = () => {
                   </div>
                 </div>
               </div>
-              
+
               <div className="p-4">
                 <ActiveComponent />
               </div>
@@ -213,7 +220,7 @@ const AdminDashboard = () => {
           </div>
         </div>
       )}
-      
+
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
         <AdminToolbar title="Bảng điều khiển quản trị" subtitle="Quản lý toàn bộ hệ thống" />
 
@@ -240,7 +247,7 @@ const AdminDashboard = () => {
                 <div className="overflow-x-auto">
                   <TabsList className="grid w-full grid-cols-4 bg-gradient-to-r from-blue-100 to-indigo-100 p-1 rounded-xl shadow-inner min-w-[400px] sm:min-w-0">
                     {tabItems.map((item) => (
-                      <TabsTrigger 
+                      <TabsTrigger
                         key={item.value}
                         value={item.value}
                         className="flex flex-col sm:flex-row items-center space-y-1 sm:space-y-0 sm:space-x-2 data-[state=active]:bg-white data-[state=active]:shadow-md data-[state=active]:text-[#02458b] rounded-lg transition-all duration-200 px-2 py-2 text-xs sm:text-sm"

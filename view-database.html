@@ -21,7 +21,7 @@
 <body>
     <div class="container">
         <h1>Database Viewer - Spika Academy</h1>
-        
+
         <div class="controls">
             <button class="btn" onclick="loadProfiles()">Load Users (Profiles)</button>
             <button class="btn" onclick="loadCourses()">Load Courses</button>
@@ -34,14 +34,14 @@
 
     <script>
         // Khởi tạo Supabase client
-        const SUPABASE_URL = "https://xotapvuospvnlhuqyyjp.supabase.co";
-        const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhvdGFwdnVvc3B2bmxodXF5eWpwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDc5OTI0MjAsImV4cCI6MjA2MzU2ODQyMH0.kKf-fSAik4y9sSU61nRXidNnVkv9KbXafMBP4zb0NTY";
-        
+        const SUPABASE_URL = "https://ltytzzennnlgbwkkhwnv.supabase.co";
+        const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx0eXR6emVubm5sZ2J3a2tod252Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTEzOTAyNDYsImV4cCI6MjA2Njk2NjI0Nn0.Swj4xGDiri9cEctpy2SUV3LOKzU5vhJIHpxozlaqScE";
+
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         function showResults(title, data, error) {
             const resultsDiv = document.getElementById('results');
-            
+
             if (error) {
                 resultsDiv.innerHTML = `
                     <div class="table-section">
@@ -71,14 +71,14 @@
                             <tr>${keys.map(key => `<th>${key}</th>`).join('')}</tr>
                         </thead>
                         <tbody>
-                            ${data.map(row => 
+                            ${data.map(row =>
                                 `<tr>${keys.map(key => `<td>${JSON.stringify(row[key])}</td>`).join('')}</tr>`
                             ).join('')}
                         </tbody>
                     </table>
                 </div>
             `;
-            
+
             resultsDiv.innerHTML = tableHTML;
         }
 
@@ -88,7 +88,7 @@
                     .from('profiles')
                     .select('*')
                     .order('created_at', { ascending: false });
-                
+
                 showResults('Users (Profiles)', data, error);
             } catch (err) {
                 showResults('Users (Profiles)', null, err);
@@ -101,7 +101,7 @@
                     .from('courses')
                     .select('*')
                     .order('created_at', { ascending: false });
-                
+
                 showResults('Courses', data, error);
             } catch (err) {
                 showResults('Courses', null, err);
@@ -118,7 +118,7 @@
                         profiles(fullname)
                     `)
                     .order('created_at', { ascending: false });
-                
+
                 showResults('Classes', data, error);
             } catch (err) {
                 showResults('Classes', null, err);
@@ -135,7 +135,7 @@
                         classes(name)
                     `)
                     .order('enrolled_at', { ascending: false });
-                
+
                 showResults('Enrollments', data, error);
             } catch (err) {
                 showResults('Enrollments', null, err);

@@ -8,7 +8,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Menu, Globe, LogOut, Settings, BarChart3, Users, BookOpen, GraduationCap } from 'lucide-react';
+import { Menu, Globe, LogOut, Settings, BarChart3, Users, BookOpen, GraduationCap, TrendingUp } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
@@ -26,6 +26,10 @@ const AdminToolbar: React.FC<AdminToolbarProps> = ({ title, subtitle, rightConte
 
   const handleNavigateToOverview = () => {
     navigate('/admin?tab=overview');
+  };
+
+  const handleNavigateToAnalytics = () => {
+    navigate('/admin?tab=analytics');
   };
 
   const handleNavigateToUsers = () => {
@@ -49,12 +53,12 @@ const AdminToolbar: React.FC<AdminToolbarProps> = ({ title, subtitle, rightConte
       await supabase.auth.signOut();
       localStorage.removeItem('currentUser');
       localStorage.removeItem('userRole');
-      
+
       toast({
         title: "Đăng xuất thành công",
         description: "Bạn đã đăng xuất khỏi hệ thống",
       });
-      
+
       navigate('/');
     } catch (error) {
       console.error('Error logging out:', error);
@@ -85,7 +89,7 @@ const AdminToolbar: React.FC<AdminToolbarProps> = ({ title, subtitle, rightConte
                 )}
               </div>
             </div>
-            
+
             <div className="flex items-center space-x-2">
               {rightContent && (
                 <div className="mr-2">
@@ -106,6 +110,10 @@ const AdminToolbar: React.FC<AdminToolbarProps> = ({ title, subtitle, rightConte
                   <DropdownMenuItem onClick={handleNavigateToOverview}>
                     <BarChart3 className="mr-2 h-4 w-4" />
                     <span>Tổng quan</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={handleNavigateToAnalytics}>
+                    <TrendingUp className="mr-2 h-4 w-4" />
+                    <span>Thống kê</span>
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={handleNavigateToUsers}>
                     <Users className="mr-2 h-4 w-4" />
@@ -156,7 +164,7 @@ const AdminToolbar: React.FC<AdminToolbarProps> = ({ title, subtitle, rightConte
               )}
             </div>
           </div>
-          
+
           <div className="flex items-center space-x-4">
             {rightContent && (
               <div>
@@ -209,4 +217,4 @@ const AdminToolbar: React.FC<AdminToolbarProps> = ({ title, subtitle, rightConte
   );
 };
 
-export default AdminToolbar; 
+export default AdminToolbar;
