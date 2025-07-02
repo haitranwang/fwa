@@ -7,6 +7,7 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useUserRole } from '@/hooks/useUserRole';
+import { useIsMobile } from '@/hooks/use-mobile';
 import { format, subDays, startOfDay, endOfDay } from 'date-fns';
 import { vi } from 'date-fns/locale';
 
@@ -36,6 +37,7 @@ const AnalyticsTab = () => {
   const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
   const { userRole, isLoading: roleLoading } = useUserRole();
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     if (!roleLoading && userRole === 'admin') {
@@ -173,27 +175,54 @@ const AnalyticsTab = () => {
   if (loading) {
     return (
       <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <h2 className="text-2xl font-bold text-gray-900">Thống kê truy cập</h2>
+        {/* Loading Header */}
+        <div className="flex flex-col space-y-4 lg:flex-row lg:items-center lg:justify-between lg:space-y-0">
+          <div className="text-center lg:text-left">
+            <div className="h-8 bg-gray-200 rounded w-48 mx-auto lg:mx-0 animate-pulse"></div>
+            <div className="h-4 bg-gray-200 rounded w-64 mx-auto lg:mx-0 mt-2 animate-pulse"></div>
+          </div>
+          <div className="flex flex-col space-y-3 sm:flex-row sm:items-center sm:space-y-0 sm:space-x-4">
+            <div className="h-10 bg-gray-200 rounded w-full sm:w-40 animate-pulse"></div>
+            <div className="h-10 bg-gray-200 rounded w-full sm:w-24 animate-pulse"></div>
+          </div>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+
+        {/* Loading Stats Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
           {[1, 2, 3, 4].map((i) => (
-            <Card key={i} className="animate-pulse">
+            <Card key={i} className="animate-pulse border-0 shadow-lg">
               <CardHeader className="pb-2">
-                <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+                <div className="flex items-center justify-between">
+                  <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+                  <div className="w-10 h-10 bg-gray-200 rounded-lg"></div>
+                </div>
               </CardHeader>
               <CardContent>
-                <div className="h-8 bg-gray-200 rounded w-1/2"></div>
+                <div className="h-8 bg-gray-200 rounded w-1/2 mb-2"></div>
+                <div className="h-3 bg-gray-200 rounded w-3/4"></div>
               </CardContent>
             </Card>
           ))}
         </div>
-        <Card className="animate-pulse">
-          <CardHeader>
-            <div className="h-6 bg-gray-200 rounded w-1/3"></div>
+
+        {/* Loading Chart */}
+        <Card className="animate-pulse border-0 shadow-lg">
+          <CardHeader className="bg-gradient-to-r from-gray-50 to-gray-100 border-b">
+            <div className="flex flex-col space-y-2 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
+              <div>
+                <div className="h-6 bg-gray-200 rounded w-48"></div>
+                <div className="h-4 bg-gray-200 rounded w-64 mt-2"></div>
+              </div>
+              <div className="flex items-center space-x-2">
+                <div className="w-3 h-3 bg-gray-200 rounded-full"></div>
+                <div className="h-3 bg-gray-200 rounded w-16"></div>
+                <div className="w-3 h-3 bg-gray-200 rounded-full ml-4"></div>
+                <div className="h-3 bg-gray-200 rounded w-16"></div>
+              </div>
+            </div>
           </CardHeader>
-          <CardContent>
-            <div className="h-80 bg-gray-200 rounded"></div>
+          <CardContent className="p-4 lg:p-6">
+            <div className="h-60 sm:h-80 lg:h-96 bg-gray-200 rounded"></div>
           </CardContent>
         </Card>
       </div>
@@ -203,15 +232,15 @@ const AnalyticsTab = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-2xl font-bold text-gray-900">Thống kê truy cập</h2>
-          <p className="text-gray-600 mt-1">Theo dõi lượt truy cập website theo thời gian</p>
+      <div className="flex flex-col space-y-4 lg:flex-row lg:items-center lg:justify-between lg:space-y-0">
+        <div className="text-center lg:text-left">
+          <h2 className="text-2xl lg:text-3xl font-bold text-[#02458b]">Thống kê truy cập</h2>
+          <p className="text-gray-600 mt-1 text-sm lg:text-base">Theo dõi lượt truy cập website theo thời gian</p>
         </div>
 
-        <div className="flex items-center space-x-4">
+        <div className="flex flex-col space-y-3 sm:flex-row sm:items-center sm:space-y-0 sm:space-x-4 lg:flex-row">
           <Select value={dateRange} onValueChange={setDateRange}>
-            <SelectTrigger className="w-40">
+            <SelectTrigger className="w-full sm:w-40">
               <SelectValue placeholder="Chọn khoảng thời gian" />
             </SelectTrigger>
             <SelectContent>
@@ -221,7 +250,7 @@ const AnalyticsTab = () => {
             </SelectContent>
           </Select>
 
-          <Button onClick={fetchAnalyticsData} variant="outline" size="sm">
+          <Button onClick={fetchAnalyticsData} variant="outline" size="sm" className="w-full sm:w-auto">
             <BarChart3 className="h-4 w-4 mr-2" />
             Làm mới
           </Button>
@@ -229,56 +258,68 @@ const AnalyticsTab = () => {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Tổng lượt truy cập</CardTitle>
-            <TrendingUp className="h-4 w-4 text-muted-foreground" />
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
+        <Card className="relative overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all duration-300 bg-gradient-to-br from-blue-50 to-blue-100 hover:scale-105 transform">
+          <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-white/20 to-transparent rounded-full -translate-y-10 translate-x-10"></div>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 relative">
+            <CardTitle className="text-sm font-medium text-gray-700">Tổng lượt truy cập</CardTitle>
+            <div className="w-10 h-10 rounded-lg bg-blue-500 flex items-center justify-center shadow-md">
+              <TrendingUp className="h-5 w-5 text-white" />
+            </div>
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats.totalVisits.toLocaleString()}</div>
-            <p className="text-xs text-muted-foreground">
+          <CardContent className="relative">
+            <div className="text-2xl lg:text-3xl font-bold text-blue-600">{stats.totalVisits.toLocaleString()}</div>
+            <p className="text-xs text-gray-600 mt-1">
               Trung bình {stats.avgVisitsPerDay.toLocaleString()}/ngày
             </p>
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Người dùng duy nhất</CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
+        <Card className="relative overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all duration-300 bg-gradient-to-br from-green-50 to-green-100 hover:scale-105 transform">
+          <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-white/20 to-transparent rounded-full -translate-y-10 translate-x-10"></div>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 relative">
+            <CardTitle className="text-sm font-medium text-gray-700">Người dùng duy nhất</CardTitle>
+            <div className="w-10 h-10 rounded-lg bg-green-500 flex items-center justify-center shadow-md">
+              <Users className="h-5 w-5 text-white" />
+            </div>
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats.totalUniqueVisitors.toLocaleString()}</div>
-            <p className="text-xs text-muted-foreground">
+          <CardContent className="relative">
+            <div className="text-2xl lg:text-3xl font-bold text-green-600">{stats.totalUniqueVisitors.toLocaleString()}</div>
+            <p className="text-xs text-gray-600 mt-1">
               {analyticsData.length > 0 ? Math.round(stats.totalUniqueVisitors / analyticsData.length).toLocaleString() : 0}/ngày
             </p>
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Lượt xem trang</CardTitle>
-            <Eye className="h-4 w-4 text-muted-foreground" />
+        <Card className="relative overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all duration-300 bg-gradient-to-br from-red-50 to-red-100 hover:scale-105 transform">
+          <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-white/20 to-transparent rounded-full -translate-y-10 translate-x-10"></div>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 relative">
+            <CardTitle className="text-sm font-medium text-gray-700">Lượt xem trang</CardTitle>
+            <div className="w-10 h-10 rounded-lg bg-red-500 flex items-center justify-center shadow-md">
+              <Eye className="h-5 w-5 text-white" />
+            </div>
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats.totalPageViews.toLocaleString()}</div>
-            <p className="text-xs text-muted-foreground">
+          <CardContent className="relative">
+            <div className="text-2xl lg:text-3xl font-bold text-red-600">{stats.totalPageViews.toLocaleString()}</div>
+            <p className="text-xs text-gray-600 mt-1">
               {analyticsData.length > 0 ? Math.round(stats.totalPageViews / analyticsData.length).toLocaleString() : 0}/ngày
             </p>
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Tỷ lệ trang/phiên</CardTitle>
-            <BarChart3 className="h-4 w-4 text-muted-foreground" />
+        <Card className="relative overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all duration-300 bg-gradient-to-br from-orange-50 to-orange-100 hover:scale-105 transform">
+          <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-white/20 to-transparent rounded-full -translate-y-10 translate-x-10"></div>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 relative">
+            <CardTitle className="text-sm font-medium text-gray-700">Tỷ lệ trang/phiên</CardTitle>
+            <div className="w-10 h-10 rounded-lg bg-orange-500 flex items-center justify-center shadow-md">
+              <BarChart3 className="h-5 w-5 text-white" />
+            </div>
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
+          <CardContent className="relative">
+            <div className="text-2xl lg:text-3xl font-bold text-orange-600">
               {stats.totalVisits > 0 ? (stats.totalPageViews / stats.totalVisits).toFixed(1) : '0.0'}
             </div>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-xs text-gray-600 mt-1">
               Trang/lượt truy cập
             </p>
           </CardContent>
@@ -286,62 +327,92 @@ const AnalyticsTab = () => {
       </div>
 
       {/* Chart */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Biểu đồ lượt truy cập</CardTitle>
-          <CardDescription>
-            Thống kê lượt truy cập website trong {dateRange} ngày qua
-          </CardDescription>
+      <Card className="border-0 shadow-lg">
+        <CardHeader className="bg-gradient-to-r from-gray-50 to-gray-100 border-b">
+          <div className="flex flex-col space-y-2 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
+            <div>
+              <CardTitle className="text-lg lg:text-xl font-bold text-[#02458b]">Biểu đồ lượt truy cập</CardTitle>
+              <CardDescription className="text-sm lg:text-base">
+                Thống kê lượt truy cập website trong {dateRange} ngày qua
+              </CardDescription>
+            </div>
+            <div className="flex items-center space-x-2">
+              <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+              <span className="text-xs text-gray-600">Lượt truy cập</span>
+              <div className="w-3 h-3 bg-green-500 rounded-full ml-4"></div>
+              <span className="text-xs text-gray-600">Người dùng</span>
+              <div className="w-3 h-3 bg-red-500 rounded-full ml-4"></div>
+              <span className="text-xs text-gray-600">Lượt xem</span>
+            </div>
+          </div>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-4 lg:p-6">
           {chartData.length > 0 ? (
-            <ResponsiveContainer width="100%" height={400}>
-              <LineChart data={chartData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis
-                  dataKey="displayDate"
-                  tick={{ fontSize: 12 }}
-                  tickLine={{ stroke: '#e0e0e0' }}
-                />
-                <YAxis
-                  tick={{ fontSize: 12 }}
-                  tickLine={{ stroke: '#e0e0e0' }}
-                />
-                <Tooltip content={<CustomTooltip />} />
-                <Legend />
-                <Line
-                  type="monotone"
-                  dataKey="visits"
-                  stroke="#2563eb"
-                  strokeWidth={3}
-                  name="Lượt truy cập"
-                  dot={{ fill: '#2563eb', strokeWidth: 2, r: 4 }}
-                  activeDot={{ r: 6, stroke: '#2563eb', strokeWidth: 2 }}
-                />
-                <Line
-                  type="monotone"
-                  dataKey="uniqueVisitors"
-                  stroke="#16a34a"
-                  strokeWidth={2}
-                  name="Người dùng duy nhất"
-                  dot={{ fill: '#16a34a', strokeWidth: 2, r: 3 }}
-                />
-                <Line
-                  type="monotone"
-                  dataKey="pageViews"
-                  stroke="#dc2626"
-                  strokeWidth={2}
-                  name="Lượt xem trang"
-                  dot={{ fill: '#dc2626', strokeWidth: 2, r: 3 }}
-                />
-              </LineChart>
-            </ResponsiveContainer>
+            <div className="w-full">
+              <ResponsiveContainer width="100%" height={isMobile ? 250 : 400}>
+                <LineChart
+                  data={chartData}
+                  margin={{
+                    top: 5,
+                    right: isMobile ? 10 : 30,
+                    left: isMobile ? 10 : 20,
+                    bottom: 5
+                  }}
+                >
+                  <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                  <XAxis
+                    dataKey="displayDate"
+                    tick={{ fontSize: isMobile ? 10 : 12 }}
+                    tickLine={{ stroke: '#e0e0e0' }}
+                    axisLine={{ stroke: '#e0e0e0' }}
+                  />
+                  <YAxis
+                    tick={{ fontSize: isMobile ? 10 : 12 }}
+                    tickLine={{ stroke: '#e0e0e0' }}
+                    axisLine={{ stroke: '#e0e0e0' }}
+                  />
+                  <Tooltip content={<CustomTooltip />} />
+                  <Legend
+                    wrapperStyle={{ fontSize: isMobile ? '12px' : '14px' }}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="visits"
+                    stroke="#2563eb"
+                    strokeWidth={isMobile ? 2 : 3}
+                    name="Lượt truy cập"
+                    dot={{ fill: '#2563eb', strokeWidth: 2, r: isMobile ? 3 : 4 }}
+                    activeDot={{ r: isMobile ? 5 : 6, stroke: '#2563eb', strokeWidth: 2 }}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="uniqueVisitors"
+                    stroke="#16a34a"
+                    strokeWidth={2}
+                    name="Người dùng duy nhất"
+                    dot={{ fill: '#16a34a', strokeWidth: 2, r: isMobile ? 2 : 3 }}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="pageViews"
+                    stroke="#dc2626"
+                    strokeWidth={2}
+                    name="Lượt xem trang"
+                    dot={{ fill: '#dc2626', strokeWidth: 2, r: isMobile ? 2 : 3 }}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
           ) : (
-            <div className="flex items-center justify-center h-80 text-gray-500">
-              <div className="text-center">
-                <BarChart3 className="h-12 w-12 mx-auto mb-4 text-gray-300" />
-                <p>Không có dữ liệu thống kê</p>
-                <p className="text-sm">Dữ liệu sẽ được cập nhật tự động</p>
+            <div className="flex items-center justify-center h-60 sm:h-80 text-gray-500">
+              <div className="text-center space-y-4">
+                <div className="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto">
+                  <BarChart3 className="h-8 w-8 text-gray-400" />
+                </div>
+                <div>
+                  <p className="text-lg font-medium text-gray-600">Không có dữ liệu thống kê</p>
+                  <p className="text-sm text-gray-500 mt-1">Dữ liệu sẽ được cập nhật tự động</p>
+                </div>
               </div>
             </div>
           )}
