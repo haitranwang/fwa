@@ -22,59 +22,16 @@ Script Node.js gặp lỗi `exec_sql` function không tồn tại vì Supabase k
    - Paste vào SQL Editor
    - Nhấn "Run" (hoặc Ctrl+Enter)
 
-4. **Chờ hoàn thành**
+4. **Load sample data (tùy chọn)**
+   - Mở file `supabase/migrations/20241201000001_sample_data.sql`
+   - Copy toàn bộ nội dung
+   - Paste vào SQL Editor
+   - Nhấn "Run" (hoặc Ctrl+Enter)
+
+5. **Chờ hoàn thành**
    - Migration sẽ chạy trong 1-2 phút
    - Kiểm tra kết quả trong Tables tab
 
-### Phương pháp 2: Chia nhỏ migration (Nếu timeout)
-
-Nếu migration quá lớn gây timeout, chia thành các phần:
-
-#### Phần 1: ENUM Types và Tables
-```sql
--- Copy từ dòng 1 đến dòng 126 trong file migration
--- (Tất cả CREATE TYPE và CREATE TABLE)
-```
-
-#### Phần 2: Indexes
-```sql
--- Copy từ dòng 127 đến dòng 171
--- (Tất cả CREATE INDEX)
-```
-
-#### Phần 3: Functions và Triggers
-```sql
--- Copy từ dòng 172 đến dòng 230
--- (CREATE FUNCTION và CREATE TRIGGER)
-```
-
-#### Phần 4: RLS và Policies
-```sql
--- Copy từ dòng 231 đến dòng 490
--- (ALTER TABLE ENABLE RLS và CREATE POLICY)
-```
-
-#### Phần 5: Comments và Sample Data
-```sql
--- Copy từ dòng 491 đến cuối file
--- (COMMENT ON và INSERT INTO)
-```
-
-### Phương pháp 3: Sử dụng Supabase CLI
-
-```bash
-# Cài đặt Supabase CLI (nếu chưa có)
-npm install -g supabase
-
-# Login
-supabase login
-
-# Link project
-supabase link --project-ref your-project-id
-
-# Chạy migration
-supabase db push
-```
 
 ## 🔍 Kiểm tra kết quả
 
@@ -82,9 +39,9 @@ Sau khi migration thành công:
 
 ### 1. Kiểm tra Tables
 ```sql
-SELECT table_name 
-FROM information_schema.tables 
-WHERE table_schema = 'public' 
+SELECT table_name
+FROM information_schema.tables
+WHERE table_schema = 'public'
 ORDER BY table_name;
 ```
 
@@ -100,13 +57,13 @@ Kết quả mong đợi:
 
 ### 2. Kiểm tra dữ liệu
 ```sql
-SELECT 
+SELECT
   'profiles' as table_name, COUNT(*) as count FROM profiles
 UNION ALL
-SELECT 
+SELECT
   'courses' as table_name, COUNT(*) as count FROM courses
 UNION ALL
-SELECT 
+SELECT
   'website_analytics' as table_name, COUNT(*) as count FROM website_analytics;
 ```
 

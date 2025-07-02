@@ -10,7 +10,7 @@ Tính năng thống kê truy cập website cho phép quản trị viên theo dõ
 - **Biểu đồ đường**: Hiển thị xu hướng lượt truy cập theo thời gian
 - **3 chỉ số chính**:
   - Lượt truy cập (Visits)
-  - Người dùng duy nhất (Unique Visitors)  
+  - Người dùng duy nhất (Unique Visitors)
   - Lượt xem trang (Page Views)
 
 ### 2. Bộ lọc thời gian
@@ -89,26 +89,6 @@ incrementTodayVisits(visits, uniqueVisitors, pageViews): Promise<void>
 - `fwa_visit_tracking`: Dữ liệu tracking chính
 - `fwa_unique_visitor`: Thông tin unique visitor
 - `fwa_session_id`: Session ID (sessionStorage)
-
-## Cài đặt và Triển khai
-
-### 1. Chạy Migration
-```bash
-# Chạy SQL migration để tạo bảng
-psql -h your-supabase-host -U postgres -d postgres -f supabase/migrations/create_website_analytics.sql
-```
-
-### 2. Setup Test Data (Optional)
-```bash
-# Chạy script setup để tạo dữ liệu test
-SUPABASE_SERVICE_KEY=your_service_key node scripts/setup-analytics.js
-```
-
-### 3. Kiểm tra Permissions
-Đảm bảo RLS policies đã được áp dụng đúng cách:
-- Admin có thể đọc dữ liệu
-- Anonymous users không thể truy cập
-- Service role có thể ghi dữ liệu
 
 ## Sử dụng
 

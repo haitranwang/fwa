@@ -1,121 +1,48 @@
-# 🏫 Spika Academy - Learning Management System
+# Welcome to your Lovable project
 
-Hệ thống quản lý học viện trực tuyến được xây dựng với React, TypeScript, Supabase và Tailwind CSS.
+## Project info
 
-## 🚀 Quick Start
+**URL**: https://lovable.dev/projects/85794ffa-e4bc-4a9b-99ee-b3aab9875a91
 
-### 1. Khôi phục Database Schema
+## How can I edit this code?
 
-**⚠️ Lưu ý:** Do hạn chế của Supabase, cách tốt nhất là sử dụng Supabase Dashboard:
+There are several ways of editing your application.
 
-**Cách khuyến nghị:**
-1. Mở [Supabase Dashboard](https://supabase.com/dashboard)
-2. Chọn project của bạn → SQL Editor
-3. Copy toàn bộ nội dung file `supabase/migrations/20241201000000_create_complete_schema.sql`
-4. Paste vào SQL Editor và nhấn "Run"
-5. Chờ 1-2 phút để hoàn thành
+**Use Lovable**
 
-**Hướng dẫn chi tiết:** Xem file `COPY_PASTE_MIGRATION.md`
+Simply visit the [Lovable Project](https://lovable.dev/projects/85794ffa-e4bc-4a9b-99ee-b3aab9875a91) and start prompting.
 
-### 2. Load Sample Data (Tùy chọn)
+Changes made via Lovable will be committed automatically to this repo.
 
-**Cách khuyến nghị:**
-1. Trong Supabase SQL Editor
-2. Copy nội dung file `supabase/migrations/20241201000001_sample_data.sql`
-3. Paste và Run
+**Use your preferred IDE**
 
-### 3. Chạy ứng dụng
+If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
 
-```bash
-npm install
+The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+
+Follow these steps:
+
+```sh
+# Step 1: Clone the repository using the project's Git URL.
+git clone <YOUR_GIT_URL>
+
+# Step 2: Navigate to the project directory.
+cd <YOUR_PROJECT_NAME>
+
+# Step 3: Install the necessary dependencies.
+npm i
+
+# Step 4: Start the development server with auto-reloading and an instant preview.
 npm run dev
 ```
 
-## 🔐 Tài khoản mẫu
+**Edit a file directly in GitHub**
 
-- **Admin:** admin@spika.edu.vn / 123456
-- **Teacher:** nguyenvana@spika.edu.vn / 123456
-- **Student:** student1@gmail.com / 123456
+- Navigate to the desired file(s).
+- Click the "Edit" button (pencil icon) at the top right of the file view.
+- Make your changes and commit the changes.
 
-## 📚 Tài liệu
-
-- **[DATABASE_MIGRATION_GUIDE.md](./DATABASE_MIGRATION_GUIDE.md)** - Hướng dẫn chi tiết migration
-- **[ANALYTICS_FEATURE.md](./docs/ANALYTICS_FEATURE.md)** - Tính năng analytics
-
-## 🗂️ Database Schema
-
-- **profiles** - Người dùng (admin, teacher, student)
-- **courses** - Khóa học
-- **classes** - Lớp học
-- **enrollments** - Đăng ký học
-- **lessons** - Buổi học
-- **assignments** - Bài tập
-- **assignment_submissions** - Bài nộp
-- **website_analytics** - Thống kê
-
-## 🛠️ Tech Stack
-
-- **Frontend:** React 18, TypeScript, Vite
-- **UI:** Tailwind CSS, Radix UI, Lucide Icons
-- **Backend:** Supabase (PostgreSQL, Auth, Storage)
-- **State:** React Query, Zustand
-- **Forms:** React Hook Form, Zod
-
-## 📁 Cấu trúc Project
-
-```
-src/
-├── components/          # UI components
-│   ├── admin/          # Admin components
-│   ├── teacher/        # Teacher components
-│   └── ui/             # Base UI components
-├── pages/              # Page components
-├── hooks/              # Custom hooks
-├── lib/                # Utilities
-└── integrations/       # Supabase integration
-```
-
-## 🔧 Development
-
-```bash
-# Install dependencies
-npm install
-
-# Start dev server
-npm run dev
-
-# Build for production
-npm run build
-
-# Preview production build
-npm run preview
-```
-
-## 📊 Features
-
-- ✅ **User Management** - Admin, Teacher, Student roles
-- ✅ **Course Management** - CRUD operations
-- ✅ **Class Management** - Schedule, enrollment
-- ✅ **Assignment System** - Create, submit, grade
-- ✅ **Analytics Dashboard** - Website statistics
-- ✅ **Responsive Design** - Mobile-first approach
-- ✅ **Real-time Updates** - Supabase subscriptions
-- ✅ **Row Level Security** - Data protection
-
-## 🚨 Migration Required
-
-**Quan trọng:** Nếu bạn mất schema database, hãy khôi phục ngay:
-
-1. **Mở Supabase Dashboard** → SQL Editor
-2. **Copy file migration** `supabase/migrations/20241201000000_create_complete_schema.sql`
-3. **Paste và Run** trong SQL Editor
-4. **Load sample data** nếu cần (file `20241201000001_sample_data.sql`)
-
-📋 **Hướng dẫn chi tiết:** `COPY_PASTE_MIGRATION.md`
-
----
-
-**Happy coding! 🎉**
+**Use GitHub Codespaces**
 
 - Navigate to the main page of your repository.
 - Click on the "Code" button (green button) near the top right.
