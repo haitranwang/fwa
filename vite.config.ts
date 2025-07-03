@@ -19,4 +19,6 @@ export default defineConfig(({ mode }) => ({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  // Base path configuration for different deployment platforms
+  base: process.env.VERCEL ? '/' : (process.env.NODE_ENV === 'production' ? '/fwa/' : '/'),
 }));
